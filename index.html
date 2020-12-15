@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Простой текстовый редактор</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="contaier">
+    <h1>Простой текстовый редактор</h1>
+    <textarea placeholder="Введите текст"></textarea>
+    <div class="btns-container">
+      <div>
+        <p>Загрузить текст</p>
+        <input type="file" name="gettxt" id="gettxt" accept=".txt">
+      </div>
+      <div>
+        <a href="" id="a" disabled>Нажмите сюда, чтобы скачать текст</a>
+        <button onclick="download('test.txt', 'text/plain')">Сгенерировать файл для скачивания</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    const container = document.querySelector('.btns-container');
+    const textarea = document.querySelector('textarea');
+    const gettxt = document.querySelector('#gettxt');
+    textarea.value = localStorage.getItem('text');
+    let text = '';
+    textarea.addEventListener('input', event => {
+      text = textarea.value;
+      localStorage.setItem('text', text);
+    });
+
+    function download(name, type) {
+      let a = document.querySelector('#a');
+      const file = new Blob([textarea.value], {type: type});
+      a.href = URL.createObjectURL(file);
+      a.download = name;
+    }
+
+    gettxt.addEventListener('change', e => {
+      try {
+        const upload = e.target.files[0];
+        const reader = new FileReader();
+        reader.addEventListener('load', (function (file) {
+          return function(e) {
+            textarea.value = e.target.result;
+            text = e.target.result;
+            localStorage.setItem('text', text);
+          } 
+        })(gettxt));
+        reader.readAsText(upload);
+      } catch (error) {
+        console.log(error);
+      }
+    });
+  </script>
+</body>
+</html>
